@@ -10,7 +10,7 @@ include(${PROJECT_SOURCE_DIR}/dependencies.cmake)
 
 crapper_setup_dependencies()
 
-add_subdirectory(src)
+add_subdirectory(src bin)
 
 if (${crapper_build_examples})
     add_subdirectory(examples)

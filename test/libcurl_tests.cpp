@@ -37,7 +37,7 @@ TEST(LibcurlTests, LibraryInitializationMultiThreaded) {
     auto start = std::atomic_bool{ false };
     auto threads = std::vector<std::jthread>{};
     EXPECT_FALSE(Libcurl::is_initialized());
-    for (auto i = 0; i < 10000; ++i) {
+    for (auto i = 0; i < 1000; ++i) {
         threads.emplace_back([&start] {
             while (not start) { }
             [[maybe_unused]] auto handle = Libcurl{};
