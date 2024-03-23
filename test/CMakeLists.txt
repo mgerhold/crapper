@@ -8,9 +8,14 @@ add_executable(libcurl_tests
         ../src/utils.cpp
 )
 
+set(CURL_LIBRARY "libcurl_static")
+if(BUILD_SHARED_LIBS)
+    set(CURL_LIBRARY "libcurl_shared")
+endif()
+
 target_include_directories(libcurl_tests PRIVATE ../src)
 target_link_libraries(libcurl_tests PRIVATE crapper_options)
-target_link_system_libraries(libcurl_tests PRIVATE libcurl_static GTest::gtest GTest::gtest_main)
+target_link_system_libraries(libcurl_tests PRIVATE ${CURL_LIBRARY} GTest::gtest GTest::gtest_main)
 
 add_executable(crapper_tests
         crapper_tests.cpp
