@@ -84,7 +84,7 @@ jobs:
           toolset: 14.30
           arch: x64
       - name: Configure CMake with Ninja and C++23
-        run: cmake -B build -G "Ninja" -DCMAKE_CXX_STANDARD=23 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+        run: cmake -B build -G "Ninja" -DCMAKE_CXX_STANDARD=23 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DBUILD_SHARED_LIBS=OFF
       - name: Build with Ninja
         run: cmake --build build
       - name: Run Tests
