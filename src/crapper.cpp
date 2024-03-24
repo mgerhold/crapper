@@ -15,12 +15,14 @@ static std::size_t write_callback(
     return num_bytes;
 }
 
-Crapper::Crapper() : m_curl_handle{ std::make_unique<CurlHandle>() } { }
+Crapper::Crapper() : m_curl_handle{ std::make_unique<CurlHandle>() } {
+    m_curl_handle->writefunction(write_callback);
+}
 
 Crapper::~Crapper() = default;
 
 [[nodiscard]] Crapper::Buffer Crapper::get(char const* const url) {
     auto buffer = Buffer{};
-    m_curl_handle->writefunction(write_callback).writedata(&buffer).url(url).perform();
+    m_curl_handle->writedata(&buffer).url(url).perform();
     return buffer;
 }
