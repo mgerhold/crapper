@@ -9,9 +9,9 @@ add_executable(libcurl_tests
 )
 
 set(CURL_LIBRARY "libcurl_static")
-if(BUILD_SHARED_LIBS)
+if (BUILD_SHARED_LIBS)
     set(CURL_LIBRARY "libcurl_shared")
-endif()
+endif ()
 
 target_include_directories(libcurl_tests PRIVATE ../src)
 target_link_libraries(libcurl_tests PRIVATE crapper_options)
@@ -19,9 +19,14 @@ target_link_system_libraries(libcurl_tests PRIVATE ${CURL_LIBRARY} GTest::gtest 
 
 add_executable(crapper_tests
         crapper_tests.cpp
+        crapper_fixture.cpp
+        crapper_fixture.hpp
+)
+target_compile_definitions(crapper_tests PRIVATE
+        TEST_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 target_link_libraries(crapper_tests PRIVATE crapper crapper_options)
-target_link_system_libraries(crapper_tests PRIVATE GTest::gtest GTest::gtest_main)
+target_link_system_libraries(crapper_tests PRIVATE GTest::gtest GTest::gtest_main c2k_sockets)
 
 gtest_discover_tests(libcurl_tests)
 gtest_discover_tests(crapper_tests)

@@ -1,9 +1,12 @@
 #pragma once
 
+#include "crapper/status_codes.hpp"
 #include "libcurl.hpp"
 #include "types.hpp"
+
 #include <memory>
 #include <stdexcept>
+#include <unordered_map>
 
 class CurlHandleError final : public std::runtime_error {
     using std::runtime_error::runtime_error;
@@ -24,22 +27,24 @@ private:
 
 public:
     using WriteFunction = std::size_t (*)(char*, std::size_t, std::size_t, void*);
+    using HeaderFunction = std::size_t (*)(char*, std::size_t, std::size_t, void*);
     using ReadFunction = std::size_t (*)(char*, std::size_t, std::size_t, void*);
     using SeekFunction = int (*)(void*, CurlOffset, int origin);
     using SockoptFunction = int (*)(void*, CurlSocket, CurlSocketType);
 
     CurlHandle();
 
-    CurlHandle& writefunction(WriteFunction function) &;
-    CurlHandle writefunction(WriteFunction function) &&;
-    CurlHandle& writedata(void* data) &;
-    CurlHandle writedata(void* data) &&;
-    CurlHandle& readfunction(ReadFunction function) &;
-    CurlHandle readfunction(ReadFunction function) &&;
-    CurlHandle& readdata(void* data) &;
-    CurlHandle readdata(void* data) &&;
-    CurlHandle& url(char const* url) &;
-    CurlHandle url(char const* url) &&;
+    void writefunction(WriteFunction function);
+    void writedata(void* data);
+    void readfunction(ReadFunction function);
+    void readdata(void* data);
+    void url(char const* url);
+    void get();
+    void post();
+    void postfields(std::string const& postdata);
+    [[nodiscard]] std::unordered_multimap<std::string, std::string> get_headers();
+    [[nodiscard]] HttpStatusCode get_http_status_code();
+
     void perform();
 
     // todo: add a lot of options, see https://curl.se/libcurl/c/curl_easy_setopt.html
