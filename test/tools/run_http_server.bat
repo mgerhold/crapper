@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 :: Check if two arguments are provided
 IF "%~2"=="" (
