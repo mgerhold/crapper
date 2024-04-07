@@ -1,8 +1,8 @@
 #pragma once
 
 #include "headers.hpp"
-#include <string>
 #include <crapper/status_codes.hpp>
+#include <string>
 
 class Response final {
 private:
@@ -18,6 +18,10 @@ public:
 
     [[nodiscard]] HttpStatusCode status() const {
         return m_status;
+    }
+
+    [[nodiscard]] Headers const& headers() const {
+        return m_headers;
     }
 
     [[nodiscard]] std::string const& body() const {

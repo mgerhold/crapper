@@ -19,6 +19,8 @@ target_link_system_libraries(libcurl_tests PRIVATE ${CURL_LIBRARY} GTest::gtest 
 
 add_executable(crapper_tests
         crapper_tests.cpp
+        crapper_fixture.cpp
+        crapper_fixture.hpp
 )
 target_compile_definitions(crapper_tests PRIVATE
         TEST_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
