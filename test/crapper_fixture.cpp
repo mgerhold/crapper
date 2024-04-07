@@ -1,4 +1,5 @@
 #include "crapper_fixture.hpp"
+#include <format>
 
 #ifndef TEST_ROOT
 #error "Test root must be defined"
