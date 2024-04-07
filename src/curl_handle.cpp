@@ -1,5 +1,7 @@
 #include "curl_handle.hpp"
 #include "utils.hpp"
+
+#include <cassert>
 #include <curl/curl.h>
 
 static_assert(std::same_as<std::underlying_type_t<CURLoption>, CurlOption>);
@@ -19,54 +21,56 @@ CurlHandle::CurlHandle() {
     m_curl = decltype(m_curl){ curl };
 }
 
-CurlHandle& CurlHandle::writefunction(WriteFunction const function) & {
+void CurlHandle::writefunction(WriteFunction const function) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_WRITEFUNCTION, function));
-    return *this;
 }
 
-CurlHandle CurlHandle::writefunction(WriteFunction const function) && {
-    this->writefunction(function);
-    return std::move(*this);
-}
-
-CurlHandle& CurlHandle::writedata(void* const data) & {
+void CurlHandle::writedata(void* const data) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_WRITEDATA, data));
-    return *this;
 }
 
-CurlHandle CurlHandle::writedata(void* const data) && {
-    this->writedata(data);
-    return std::move(*this);
-}
-
-CurlHandle& CurlHandle::readfunction(ReadFunction const function) & {
+void CurlHandle::readfunction(ReadFunction const function) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_READFUNCTION, function));
-    return *this;
 }
 
-CurlHandle CurlHandle::readfunction(ReadFunction const function) && {
-    this->readfunction(function);
-    return std::move(*this);
-}
-
-CurlHandle& CurlHandle::readdata(void* const data) & {
+void CurlHandle::readdata(void* data) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_READDATA, data));
-    return *this;
 }
 
-CurlHandle CurlHandle::readdata(void* const data) && {
-    this->readdata(data);
-    return std::move(*this);
-}
-
-CurlHandle& CurlHandle::url(char const* const url) & {
+void CurlHandle::url(char const* url) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_URL, url));
-    return *this;
 }
 
-CurlHandle CurlHandle::url(char const* const url) && {
-    this->url(url);
-    return std::move(*this);
+void CurlHandle::get() {
+    evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_HTTPGET, 1L));
+}
+
+void CurlHandle::post() {
+    evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_POST, 1L));
+}
+
+void CurlHandle::postfields(std::string const& postdata) {
+    evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, postdata.c_str()));
+}
+
+[[nodiscard]] std::unordered_multimap<std::string, std::string> CurlHandle::get_headers() {
+    auto result = std::unordered_multimap<std::string, std::string>{};
+    for (auto previous = static_cast<curl_header*>(nullptr);;) {
+        auto const current = curl_easy_nextheader(m_curl.get(), CURLH_HEADER, -1, previous);
+        if (current == nullptr) {
+            break;
+        }
+        result.emplace(current->name, current->value);
+        previous = current;
+    }
+    return result;
+}
+
+[[nodiscard]] HttpStatusCode CurlHandle::get_http_status_code() {
+    long status_code;
+    [[maybe_unused]] auto const result = curl_easy_getinfo(m_curl.get(), CURLINFO_RESPONSE_CODE, &status_code);
+    assert(result == CURLE_OK);
+    return HttpStatusCode{ static_cast<std::underlying_type_t<HttpStatusCode>>(status_code) };
 }
 
 void CurlHandle::perform() {

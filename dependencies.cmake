@@ -17,6 +17,12 @@ function(crapper_setup_dependencies)
             GIT_TAG curl-8_6_0
             OPTIONS ${LIBCURL_OPTIONS}
     )
+    CPMAddPackage(
+            NAME NLOHMANN_JSON
+            GITHUB_REPOSITORY nlohmann/json
+            VERSION 3.11.3
+    )
+    add_compile_definitions(JSON_HAS_RANGES=0)
     if (${crapper_build_tests})
         CPMAddPackage(
                 NAME GOOGLE_TEST
@@ -25,6 +31,11 @@ function(crapper_setup_dependencies)
                 OPTIONS
                 "BUILD_GMOCK OFF"
                 "INSTALL_GTEST OFF"
+        )
+        CPMAddPackage(
+                NAME C2K_SOCKETS
+                GITHUB_REPOSITORY mgerhold/sockets
+                VERSION 0.4.0
         )
     endif ()
 endfunction()
