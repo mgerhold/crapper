@@ -1,4 +1,5 @@
 #include "crapper_fixture.hpp"
+#include <format>
 
 TEST_F(CrapperFixture, SimpleGetRequest) {
     auto const response = Crapper{}.get(base_url).send();
