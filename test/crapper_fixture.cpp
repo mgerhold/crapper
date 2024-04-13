@@ -63,10 +63,11 @@ static void run_http_server(std::uint16_t const socket_port) {
 }
 
 [[nodiscard]] std::optional<std::string> read_until_null_terminator(c2k::ClientSocket& peer) {
+    using namespace std::chrono_literals;
     auto buffer = std::string{};
     while (true) {
         try {
-            auto const c = peer.receive<char>().get();
+            auto const c = peer.receive<char>(2s).get();
             if (c == '\0') {
                 break;
             }
@@ -103,6 +104,7 @@ void CrapperFixture::run_socket_thread() {
         m_condition_variable.notify_one();
     }
 }
+
 CrapperFixture::CrapperFixture()
     : m_socket_port_future{ m_socket_port_promise.get_future() },
       m_http_port_future{ m_http_port_promise.get_future() },
@@ -112,12 +114,15 @@ CrapperFixture::CrapperFixture()
     http_port = m_http_port_future.get();
     base_url = std::format("http://127.0.0.1:{}", http_port);
 }
-CrapperFixture::~CrapperFixture() {
+
+CrapperFixture::~CrapperFixture() noexcept {
     std::ignore = Crapper{}.post(std::format("{}/shutdown", base_url)).send();
 }
+
 void CrapperFixture::SetUpTestSuite() {
     setup_python_venv();
 }
+
 nlohmann::json CrapperFixture::get_next_request() {
     // todo: parse into custom data structure
     return nlohmann::json::parse(m_received_messages.wait_and_apply(

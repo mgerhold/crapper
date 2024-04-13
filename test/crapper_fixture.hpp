@@ -26,7 +26,7 @@ protected:
 
     CrapperFixture();
 
-    ~CrapperFixture() override;
+    ~CrapperFixture() noexcept override;
 
     static void SetUpTestSuite();
 

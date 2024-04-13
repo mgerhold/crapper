@@ -53,20 +53,22 @@ def main() -> None:
 
     global s
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        print("connecting socket...")
-        s.connect(("localhost", args.socket_port))
+        print(f"connecting socket on port {args.socket_port}...")
+        s.connect(("127.0.0.1", args.socket_port))
         print("connected")
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as test_socket:
-            test_socket.bind(("localhost", 0))
+            test_socket.bind(("127.0.0.1", 0))
             webserver_port = test_socket.getsockname()[1]
 
-        s.sendall(f"{webserver_port}\0".encode())
-
-        server = make_server("localhost", webserver_port, app)
+        server = make_server("127.0.0.1", webserver_port, app)
         thread = threading.Thread(target=server.serve_forever)
-        print("starting HTTP server...")
+        print(f"starting HTTP server on port {webserver_port}...")
         thread.start()
+
+        time.sleep(0.5)
+
+        s.sendall(f"{webserver_port}\0".encode())
         while running:
             time.sleep(0.1)
 
