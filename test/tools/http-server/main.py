@@ -3,6 +3,7 @@ import json
 import socket
 import threading
 import time
+from pprint import pprint
 from typing import Any
 from typing import Optional
 
@@ -24,15 +25,16 @@ def send_json_data(data: dict[str, Any]) -> None:
     s.sendall(serialized_data.encode())
 
 
-@app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST", "DELETE"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def handle_request(path: str) -> Response:
     assert isinstance(path, str)
+    pprint(vars(request))
     req_data = {
         "endpoint": path,
         "method": request.method,
         "headers": dict(request.headers),
-        "body": request.get_json(force=True, silent=True)
+        "body": request.data.decode("utf-8"),
     }
     send_json_data(req_data)
     return Response("OK", status=200)
