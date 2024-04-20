@@ -1,8 +1,45 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
+
+enum class HeaderKey {
+    ContentType,
+};
+
+[[nodiscard]] inline char const* to_string(HeaderKey const key) {
+    switch (key) {
+        case HeaderKey::ContentType:
+            return "Content-Type";
+    }
+    std::unreachable();
+}
+
+enum class ContentType {
+    TextPlain,
+    ApplicationJson,
+};
+
+[[nodiscard]] inline char const* to_string(ContentType const key) {
+    switch (key) {
+        case ContentType::TextPlain:
+            return "text/plain";
+        case ContentType::ApplicationJson:
+            return "application/json";
+    }
+    std::unreachable();
+}
+
+struct curl_slist;
+
+struct CurlStringListDeleter final {
+    void operator()(curl_slist* pointer) const;
+};
+
+using CurlStringList = std::unique_ptr<curl_slist, CurlStringListDeleter>;
 
 class Headers final {
 private:
@@ -30,4 +67,6 @@ public:
     [[nodiscard]] std::optional<std::string> operator[](std::string const& key) const {
         return get(key);
     }
+
+    [[nodiscard]] CurlStringList as_curl_string_list() const;
 };

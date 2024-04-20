@@ -23,6 +23,8 @@ function(set_warnings target_name warnings_as_errors)
             /w14905 # wide string literal cast to 'LPSTR'
             /w14906 # string literal cast to 'LPWSTR'
             /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+            /w14061 # warn on non-exhaustive switch statements on enums
+            /w14062 # warn on non-exhaustive switch statements on enums
             /permissive- # standards conformance mode for MSVC compiler.
     )
 
@@ -41,6 +43,7 @@ function(set_warnings target_name warnings_as_errors)
             -Wdouble-promotion # warn if float is implicit promoted to double
             -Wformat=2 # warn on security issues around functions that format output (ie printf)
             -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation
+            -Wswitch-enum # warn on non-exhaustive switch statements on enums
     )
 
     set(gcc_warnings

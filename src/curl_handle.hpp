@@ -1,9 +1,10 @@
 #pragma once
 
-#include "crapper/status_codes.hpp"
 #include "libcurl.hpp"
 #include "types.hpp"
-
+#include <crapper/headers.hpp>
+#include <crapper/method.hpp>
+#include <crapper/status_codes.hpp>
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>
@@ -42,6 +43,8 @@ public:
     void get();
     void post();
     void postfields(std::string const& postdata);
+    void customrequest(Method method);
+    void httpheader(CurlStringList const& list);
     [[nodiscard]] std::unordered_multimap<std::string, std::string> get_headers();
     [[nodiscard]] HttpStatusCode get_http_status_code();
 
@@ -50,5 +53,5 @@ public:
     // todo: add a lot of options, see https://curl.se/libcurl/c/curl_easy_setopt.html
 
 private:
-    static void evaluate_setopt_return_code(int return_code);
+    static void evaluate_setopt_return_code(CurlErrorCode return_code);
 };

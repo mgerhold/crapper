@@ -1,16 +1,17 @@
 #pragma once
 
 #include "curl_handle.hpp"
-#include "response.hpp"
+#include "include/crapper/response.hpp"
 #include <string>
 
 class Request {
 private:
     std::string m_url;
     std::string m_body;
+    Headers m_headers;
 
 protected:
-    Request(std::string url, std::string body, CurlHandle& curl_handle);
+    Request(std::string url, std::string body, Headers headers, CurlHandle& curl_handle);
     virtual void prepare_curl(CurlHandle& curl_handle) const;
 
     [[nodiscard]] std::string const& body() const {

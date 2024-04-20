@@ -10,15 +10,17 @@ add_library(crapper
         types.hpp
         request.cpp
         request.hpp
-        response.cpp
-        response.hpp
+        include/crapper/response.hpp
         get_request.cpp
         get_request.hpp
         post_request.cpp
         post_request.hpp
         headers.cpp
-        headers.hpp
+        include/crapper/headers.hpp
         include/crapper/status_codes.hpp
+        include/crapper/method.hpp
+        delete_request.cpp
+        delete_request.hpp
 )
 
 target_include_directories(crapper PUBLIC include)
@@ -27,6 +29,8 @@ set(CURL_LIBRARY "libcurl_static")
 if (BUILD_SHARED_LIBS)
     set(CURL_LIBRARY "libcurl_shared")
 endif ()
+
+target_link_libraries(crapper PUBLIC crapper_options)
 
 target_link_system_libraries(crapper
         PUBLIC

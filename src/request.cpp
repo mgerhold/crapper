@@ -1,5 +1,5 @@
 #include "request.hpp"
-#include "headers.hpp"
+#include "include/crapper/headers.hpp"
 #include <iostream>
 #include <unordered_map>
 
@@ -19,9 +19,10 @@ static std::size_t write_callback(
     return num_bytes;
 }
 
-Request::Request(std::string url, std::string body, CurlHandle& curl_handle)
+Request::Request(std::string url, std::string body, Headers headers, CurlHandle& curl_handle)
     : m_url{ std::move(url) },
-      m_body{ std::move(body) } {
+      m_body{ std::move(body) },
+      m_headers{ std::move(headers) } {
     curl_handle.writefunction(write_callback);
 }
 
@@ -32,6 +33,9 @@ void Request::prepare_curl(CurlHandle& curl_handle) const {
 [[nodiscard]] Response Request::send(CurlHandle& curl_handle) const {
     auto body_buffer = std::string{};
     curl_handle.writedata(&body_buffer);
+
+    auto header_list = m_headers.as_curl_string_list();
+    curl_handle.httpheader(header_list);
 
     prepare_curl(curl_handle);
     curl_handle.perform();
