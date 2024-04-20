@@ -30,7 +30,7 @@ if (BUILD_SHARED_LIBS)
     set(CURL_LIBRARY "libcurl_shared")
 endif ()
 
-target_link_libraries(crapper PRIVATE crapper_options)
+target_link_libraries(crapper PUBLIC crapper_options)
 
 target_link_system_libraries(crapper
         PUBLIC
