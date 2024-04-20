@@ -2,6 +2,11 @@
 
 void GetRequest::prepare_curl(CurlHandle& curl_handle) const {
     Request::prepare_curl(curl_handle);
-    curl_handle.get();
-    // todo: pass data to curl
+    if (body().empty()) {
+        curl_handle.get();
+    } else {
+        curl_handle.post();
+        curl_handle.postfields(body());
+        curl_handle.customrequest(Method::Get);
+    }
 }

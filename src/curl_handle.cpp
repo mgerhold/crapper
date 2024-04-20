@@ -53,6 +53,24 @@ void CurlHandle::postfields(std::string const& postdata) {
     evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_POSTFIELDS, postdata.c_str()));
 }
 
+void CurlHandle::customrequest(Method const method) {
+    switch (method) {
+        case Method::Get:
+            evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, "GET"));
+            break;
+        case Method::Post:
+            evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, "POST"));
+            break;
+        case Method::Delete:
+            evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_CUSTOMREQUEST, "DELETE"));
+            break;
+    }
+}
+
+void CurlHandle::httpheader(CurlStringList const& list) {
+    evaluate_setopt_return_code(curl_easy_setopt(m_curl.get(), CURLOPT_HTTPHEADER, list.get()));
+}
+
 [[nodiscard]] std::unordered_multimap<std::string, std::string> CurlHandle::get_headers() {
     auto result = std::unordered_multimap<std::string, std::string>{};
     for (auto previous = static_cast<curl_header*>(nullptr);;) {
@@ -79,7 +97,7 @@ void CurlHandle::perform() {
     }
 }
 
-void CurlHandle::evaluate_setopt_return_code(int const return_code) {
+void CurlHandle::evaluate_setopt_return_code(CurlErrorCode const return_code) {
     if (return_code != 0) {
         throw CurlHandleError{ curl_error_string("failed to set CURL option", return_code) };
     }

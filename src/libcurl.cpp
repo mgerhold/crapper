@@ -5,7 +5,7 @@
 
 
 Libcurl::Libcurl() {
-    auto lock = std::scoped_lock{ s_mutex };
+    auto const lock = std::scoped_lock{ s_mutex };
     if (s_num_references == 0) {
         if (auto const error_code = curl_global_init(CURL_GLOBAL_DEFAULT); error_code != 0) {
             throw LibcurlError{ curl_error_string("failed to initialize libcurl", error_code) };
@@ -15,7 +15,7 @@ Libcurl::Libcurl() {
 }
 
 Libcurl::Libcurl([[maybe_unused]] Libcurl const& other) {
-    auto lock = std::scoped_lock{ s_mutex };
+    auto const lock = std::scoped_lock{ s_mutex };
     assert(s_num_references > 0);
     ++s_num_references;
 }
@@ -25,7 +25,7 @@ Libcurl::Libcurl(Libcurl&& other) noexcept {
 }
 
 Libcurl& Libcurl::operator=([[maybe_unused]] Libcurl const& other) {
-    auto lock = std::scoped_lock{ s_mutex };
+    auto const lock = std::scoped_lock{ s_mutex };
     assert(s_num_references > 0);
     ++s_num_references;
     return *this;
@@ -42,7 +42,7 @@ Libcurl::~Libcurl() {
         return;
     }
 
-    auto lock = std::scoped_lock{ s_mutex };
+    auto const lock = std::scoped_lock{ s_mutex };
     assert(s_num_references > 0);
     --s_num_references;
     if (s_num_references == 0) {
@@ -51,6 +51,6 @@ Libcurl::~Libcurl() {
 }
 
 [[nodiscard]] bool Libcurl::is_initialized() {
-    auto lock = std::scoped_lock{ s_mutex };
+    auto const lock = std::scoped_lock{ s_mutex };
     return s_num_references > 0;
 }
