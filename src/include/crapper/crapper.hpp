@@ -27,6 +27,10 @@ private:
         std::unordered_multimap<std::string, std::string> header_fields;
 
         [[nodiscard]] std::unique_ptr<Request> create_request(CurlHandle& curl_handle) const;
+
+        void reset() {
+            *this = {};
+        }
     };
 
     std::unique_ptr<CurlHandle> m_curl_handle; // pointer indirection to avoid exposing CurlHandle's definition
@@ -46,6 +50,9 @@ public:
     [[nodiscard]] Crapper post(std::string url) &&;
     Crapper& delete_(std::string url) &;
     [[nodiscard]] Crapper delete_(std::string url) &&;
+
+    Crapper& header(HeaderKey key, std::string value) &;
+    [[nodiscard]] Crapper header(HeaderKey key, std::string value) &&;
 
     Crapper& body(std::string body) &;
     [[nodiscard]] Crapper body(std::string body) &&;

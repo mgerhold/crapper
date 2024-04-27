@@ -155,3 +155,20 @@ TEST_F(CrapperFixture, DeleteRequest) {
     EXPECT_EQ(request["headers"]["Accept"], "*/*");
     EXPECT_EQ(request["body"], "");
 }
+
+TEST_F(CrapperFixture, GetRequestWithHeaders) {
+    auto const response = Crapper{}.get(base_url).header(HeaderKey::Authorization, "Bearer my_token").send();
+    EXPECT_EQ(response.status(), HttpStatusCode::Ok);
+    EXPECT_EQ(response.headers().get("Connection"), "close");
+    EXPECT_EQ(response.headers().get("Content-Length"), "2");
+    EXPECT_EQ(response.headers().get("Content-Type"), "text/html; charset=utf-8");
+    EXPECT_EQ(response.body(), "OK");
+
+    auto const request = get_next_request();
+    EXPECT_EQ(request["endpoint"], "");
+    EXPECT_EQ(request["method"], "GET");
+    EXPECT_EQ(request["headers"]["Host"], std::format("127.0.0.1:{}", http_port));
+    EXPECT_EQ(request["headers"]["Accept"], "*/*");
+    EXPECT_EQ(request["headers"]["Authorization"], "Bearer my_token");
+    EXPECT_EQ(request["body"], "");
+}
