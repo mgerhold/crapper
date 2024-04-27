@@ -8,12 +8,15 @@
 
 enum class HeaderKey {
     ContentType,
+    Authorization,
 };
 
 [[nodiscard]] inline char const* to_string(HeaderKey const key) {
     switch (key) {
         case HeaderKey::ContentType:
             return "Content-Type";
+        case HeaderKey::Authorization:
+            return "Authorization";
     }
     std::unreachable();
 }

@@ -2,9 +2,7 @@
 #include "delete_request.hpp"
 #include "get_request.hpp"
 #include "post_request.hpp"
-
 #include <crapper/crapper.hpp>
-
 
 [[nodiscard]] std::unique_ptr<Request> Crapper::State::create_request(CurlHandle& curl_handle) const {
     switch (method) {
@@ -27,6 +25,7 @@ Crapper& Crapper::operator=(Crapper&&) noexcept = default;
 Crapper::~Crapper() = default;
 
 Crapper& Crapper::get(std::string url) & {
+    m_state.reset();
     m_state.method = Method::Get;
     m_state.url = std::move(url);
     return *this;
@@ -38,6 +37,7 @@ Crapper& Crapper::get(std::string url) & {
 }
 
 Crapper& Crapper::post(std::string url) & {
+    m_state.reset();
     m_state.method = Method::Post;
     m_state.url = std::move(url);
     return *this;
@@ -49,6 +49,7 @@ Crapper& Crapper::post(std::string url) & {
 }
 
 Crapper& Crapper::delete_(std::string url) & {
+    m_state.reset();
     m_state.method = Method::Delete;
     m_state.url = std::move(url);
     return *this;
@@ -56,6 +57,16 @@ Crapper& Crapper::delete_(std::string url) & {
 
 [[nodiscard]] Crapper Crapper::delete_(std::string url) && {
     this->delete_(std::move(url));
+    return std::move(*this);
+}
+
+Crapper& Crapper::header(HeaderKey const key, std::string value) & {
+    m_state.header_fields.insert({ to_string(key), std::move(value) });
+    return *this;
+}
+
+[[nodiscard]] Crapper Crapper::header(HeaderKey const key, std::string value) && {
+    this->header(key, std::move(value));
     return std::move(*this);
 }
 
