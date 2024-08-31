@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef _WIN32
+#include <cstdint>
+
 using CurlOption = int;
 using CurlSocket = std::uintptr_t;
 using CurlSocketType = int;
