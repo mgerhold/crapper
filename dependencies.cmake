@@ -35,7 +35,7 @@ function(crapper_setup_dependencies)
         CPMAddPackage(
                 NAME C2K_SOCKETS
                 GITHUB_REPOSITORY mgerhold/sockets
-                VERSION 0.4.0
+                VERSION 0.4.1
         )
     endif ()
 endfunction()
